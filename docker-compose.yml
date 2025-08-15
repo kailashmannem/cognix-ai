@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: cognix-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: cognix_platform
+    volumes:
+      - mongodb_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - cognix-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cognix-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      PLATFORM_MONGODB_URL: mongodb://admin:password@mongodb:27017/cognix_platform?authSource=admin
+      PLATFORM_DATABASE_NAME: cognix_platform
+      JWT_SECRET_KEY: dev-secret-key-change-in-production
+      CORS_ORIGINS: http://localhost:3000
+    depends_on:
+      - mongodb
+    volumes:
+      - ./backend:/app
+      - vector_stores:/app/vector_stores
+    networks:
+      - cognix-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cognix-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - cognix-network
+
+volumes:
+  mongodb_data:
+  vector_stores:
+
+networks:
+  cognix-network:
+    driver: bridge
