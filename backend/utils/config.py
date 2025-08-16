@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 1440
     
+    # Encryption
+    ENCRYPTION_KEY: Optional[str] = None
+    
     # LLM Providers
     DEFAULT_LLM_PROVIDER: str = "openai"
     OLLAMA_BASE_URL: str = "http://localhost:11434"

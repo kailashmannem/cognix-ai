@@ -55,3 +55,14 @@ class EncryptionService:
 
 # Global encryption service instance
 encryption_service = EncryptionService()
+
+
+# Convenience functions for backward compatibility
+def encrypt_data(data: str) -> str:
+    """Encrypt data using the global encryption service"""
+    return encryption_service.encrypt(data)
+
+
+def decrypt_data(encrypted_data: str) -> str:
+    """Decrypt data using the global encryption service"""
+    return encryption_service.decrypt(encrypted_data)
