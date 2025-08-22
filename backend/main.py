@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import uvicorn
 
-from routers import auth, chat, documents, user
+from routers import auth, chat, documents, user, config
 from utils.database import connect_to_mongo, close_mongo_connection
 
 
@@ -37,6 +37,7 @@ app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
 app.include_router(chat.router, prefix="/api/chats", tags=["chat"])
 app.include_router(documents.router, prefix="/api/documents", tags=["documents"])
 app.include_router(user.router, prefix="/api/user", tags=["user"])
+app.include_router(config.router, prefix="/api/user", tags=["configuration"])
 
 
 @app.get("/")
